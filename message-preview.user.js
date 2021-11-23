@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Nachrichtenvorschau
-// @version     1.0.0
+// @version     1.1.0
 // @author      holzmaster
 // @namespace   holzmaster
 // @include     https://pr0gramm.com*
@@ -11,21 +11,6 @@
 // ==/UserScript==
 
 (() => {
-	const $$ = document.getElementById.bind(document);
-	const $ = document.querySelector.bind(document);
-	const createElement = (element, className = undefined, textContent = undefined) => {
-		const res = document.createElement(element);
-
-		if (typeof className !== "undefined")
-			res.className = className;
-
-		if (typeof textContent !== "undefined")
-			res.textContent = textContent;
-		return res;
-	}
-
-	let popover = null;
-
 	addGlobalStyle(`
 	.pending-popover {
 		position: absolute;
@@ -56,6 +41,22 @@
 		color: var(--theme-secondary-color);
 	}
 	`);
+
+	addScript(`
+	const $$ = document.getElementById.bind(document);
+	const $ = document.querySelector.bind(document);
+	const createElement = (element, className = undefined, textContent = undefined) => {
+		const res = document.createElement(element);
+
+		if (typeof className !== "undefined")
+			res.className = className;
+
+		if (typeof textContent !== "undefined")
+			res.textContent = textContent;
+		return res;
+	}
+
+	let popover = null;
 
 	function installHover() {
 		console.assert(!popover);
@@ -95,7 +96,7 @@
 		}
 		popover.textContent = "";
 
-		const counter = createElement("h4", undefined, `${messages.length} Nachrichten`);
+		const counter = createElement("h4", undefined, \`\${messages.length} Nachrichten\`);
 
 		const messageContainer = createElement("div", "message-container");
 
@@ -119,11 +120,19 @@
 	}
 
 	setTimeout(() => installHover(), 100);
+	`
+	);
 
 	function addGlobalStyle(css) {
 		const style = document.createElement("style");
-		style.type = "text/css";
 		style.innerHTML = css;
 		document.head.appendChild(style);
+	}
+
+	function addScript(code) {
+		const script = document.createElement("script");
+		script.type = "module";
+		style.innerHTML = css;
+		document.body.appendChild(script);
 	}
 })();
