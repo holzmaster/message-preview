@@ -42,85 +42,85 @@
 	}
 	`);
 
-	addScript(`
-	const $$ = document.getElementById.bind(document);
-	const $ = document.querySelector.bind(document);
-	const createElement = (element, className = undefined, textContent = undefined) => {
-		const res = document.createElement(element);
+	addScript(`(() => {
+		const $$ = document.getElementById.bind(document);
+		const $ = document.querySelector.bind(document);
+		const createElement = (element, className = undefined, textContent = undefined) => {
+			const res = document.createElement(element);
 
-		if (typeof className !== "undefined")
-			res.className = className;
+			if (typeof className !== "undefined")
+				res.className = className;
 
-		if (typeof textContent !== "undefined")
-			res.textContent = textContent;
-		return res;
-	}
+			if (typeof textContent !== "undefined")
+				res.textContent = textContent;
+			return res;
+		}
 
-	let popover = null;
+		let popover = null;
 
-	function installHover() {
-		console.assert(!popover);
+		function installHover() {
+			console.assert(!popover);
 
-		const ib = $$("inbox-link");
-		ib.style.position = "relative";
+			const ib = $$("inbox-link");
+			ib.style.position = "relative";
 
-		popover = createElement("div", "pending-popover", "Lade...");
+			popover = createElement("div", "pending-popover", "Lade...");
 
-		ib.appendChild(popover);
+			ib.appendChild(popover);
 
-		popover.style.display = "none";
-		ib.addEventListener("mouseenter", () => {
-			popover.style.display = "";
-			updatePopoverContents();
-
-		});
-		ib.addEventListener("mouseleave", () => {
 			popover.style.display = "none";
-		});
-	}
+			ib.addEventListener("mouseenter", () => {
+				popover.style.display = "";
+				updatePopoverContents();
 
-	async function updatePopoverContents() {
-		popover.innerHTML = "";
-		popover.textContent = "Lade..."
-
-		const inboxData = await fetch("/api/inbox/pending").then(r => r.json());
-		if (!inboxData || !inboxData.messages) {
-			popover.textContent = "Fehler beim Laden :(";
-			return;
+			});
+			ib.addEventListener("mouseleave", () => {
+				popover.style.display = "none";
+			});
 		}
-		const messages = inboxData.messages;
 
-		if (messages.length === 0) {
-			popover.textContent = "Keine Nachrichten";
-			return;
+		async function updatePopoverContents() {
+			popover.innerHTML = "";
+			popover.textContent = "Lade..."
+
+			const inboxData = await fetch("/api/inbox/pending").then(r => r.json());
+			if (!inboxData || !inboxData.messages) {
+				popover.textContent = "Fehler beim Laden :(";
+				return;
+			}
+			const messages = inboxData.messages;
+
+			if (messages.length === 0) {
+				popover.textContent = "Keine Nachrichten";
+				return;
+			}
+			popover.textContent = "";
+
+			const counter = createElement("h4", undefined, \`\${messages.length} Nachrichten\`);
+
+			const messageContainer = createElement("div", "message-container");
+
+			messages.map(createInboxElement).forEach(e => messageContainer.appendChild(e));
+
+			popover.appendChild(counter);
+			popover.appendChild(messageContainer);
 		}
-		popover.textContent = "";
 
-		const counter = createElement("h4", undefined, \`\${messages.length} Nachrichten\`);
+		function createInboxElement(message) {
+			const container = createElement("div", "inbox-element");
 
-		const messageContainer = createElement("div", "message-container");
+			container.appendChild(
+				createElement("div", "message-user", message.name),
+			);
+			container.appendChild(
+				createElement("div", "message-content", message.message),
+			);
 
-		messages.map(createInboxElement).forEach(e => messageContainer.appendChild(e));
+			return container;
+		}
 
-		popover.appendChild(counter);
-		popover.appendChild(messageContainer);
-	}
-
-	function createInboxElement(message) {
-		const container = createElement("div", "inbox-element");
-
-		container.appendChild(
-			createElement("div", "message-user", message.name),
-		);
-		container.appendChild(
-			createElement("div", "message-content", message.message),
-		);
-
-		return container;
-	}
-
-	setTimeout(() => installHover(), 100);
-	`
+		setTimeout(() => installHover(), 100);
+	})();`
 	);
 
 	function addGlobalStyle(css) {
