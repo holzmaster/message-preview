@@ -132,7 +132,7 @@
 	function addScript(code) {
 		const script = document.createElement("script");
 		script.type = "module";
-		style.innerHTML = css;
+		script.innerHTML = code;
 		document.body.appendChild(script);
 	}
 })();
