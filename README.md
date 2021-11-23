@@ -1,7 +1,7 @@
 # message-preview
 Nachrichtenvorschau beim Hovern über den Briefumschlag.
 
-Könnte noch viel mehr machen, reicht aber für mich so. Erweiterungen können aber trotzdem gern eingereicht werden!°
+Könnte noch viel mehr machen, reicht aber für mich so. Erweiterungen können aber trotzdem gern eingereicht werden!
 
 ## Installation
 Braucht Chrome oder Firefox:
