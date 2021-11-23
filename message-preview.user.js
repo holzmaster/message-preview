@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Nachrichtenvorschau
-// @version     1.1.0
+// @version     1.1.1
 // @author      holzmaster
 // @namespace   holzmaster
 // @include     https://pr0gramm.com*
