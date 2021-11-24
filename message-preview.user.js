@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Nachrichtenvorschau
-// @version     1.1.2
+// @version     1.2.0
 // @author      holzmaster
 // @namespace   holzmaster
 // @include     https://pr0gramm.com*
@@ -31,14 +31,23 @@
 	.pending-popover h4 {
 		margin: 0;
 	}
-	.pending-popover .message-container {
+	.pending-popover .other-container {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
 	}
-	.pending-popover .message-container .message-user {
+	.pending-popover .other-container .message-user {
 		font-size: 80%;
 		color: var(--theme-secondary-color);
+	}
+	.pending-popover .stalk-container {
+		display: flex;
+		flex-direction: row;
+		gap: 1px;
+	}
+	.pending-popover .stalk-container img {
+		width: 100px;
+		height: 100px;
 	}
 	`);
 
@@ -72,7 +81,6 @@
 			ib.addEventListener("mouseenter", () => {
 				popover.style.display = "";
 				updatePopoverContents();
-
 			});
 			ib.addEventListener("mouseleave", () => {
 				popover.style.display = "none";
@@ -96,32 +104,58 @@
 			}
 			popover.textContent = "";
 
-			const counter = createElement("h4", undefined, \`\${messages.length} Nachrichten\`);
 
-			const messageContainer = createElement("div", "message-container");
+			const stalkMessages = messages.filter(m => m.type === "follows");
+			if (stalkMessages.length > 0) {
+				const counter = createElement("h4", undefined, stalkMessages.length + " Neue Posts");
 
-			messages.map(createInboxElement).forEach(e => messageContainer.appendChild(e));
+				const messageContainer = createElement("div", "stalk-container");
+				stalkMessages.map(createStalkMessageElement).forEach(e => messageContainer.appendChild(e));
 
-			popover.appendChild(counter);
-			popover.appendChild(messageContainer);
+				const stalkMessagesElement = createElement("div", "stalk-messages");
+
+				stalkMessagesElement.appendChild(counter);
+				stalkMessagesElement.appendChild(messageContainer);
+				popover.appendChild(stalkMessagesElement);
+			}
+
+			const otherMessages = messages.filter(m => m.type !== "follows");
+			if (otherMessages.length > 0) {
+				const counter = createElement("h4", undefined, otherMessages.length + " Nachrichten");
+
+				const messageContainer = createElement("div", "other-container");
+				otherMessages.map(createOtherMessageElement).forEach(e => messageContainer.appendChild(e));
+
+				const otherMessagesElement = createElement("div", "other-messages");
+
+				otherMessagesElement.appendChild(counter);
+				otherMessagesElement.appendChild(messageContainer);
+				popover.appendChild(otherMessagesElement);
+			}
+
 		}
 
-		function createInboxElement(message) {
-			const container = createElement("div", "inbox-element");
+		function createOtherMessageElement(message) {
+			const container = createElement("div");
 
-			container.appendChild(
-				createElement("div", "message-user", message.name),
-			);
-			container.appendChild(
-				createElement("div", "message-content", message.message),
-			);
+			container.appendChild(createElement("div", "message-user", message.name));
+			container.appendChild(createElement("div", "message-content", message.message));
+
+			return container;
+		}
+
+		function createStalkMessageElement(message) {
+			const container = createElement("div");
+
+			const img = createElement("img", "stalk-content", message.message);
+			img.src = "https://thumb.pr0gramm.com/" + message.thumb;
+			container.appendChild(img);
 
 			return container;
 		}
 
 		setTimeout(() => installHover(), 100);
-	})();`
-	);
+	})();`);
 
 	function addGlobalStyle(css) {
 		const style = document.createElement("style");
